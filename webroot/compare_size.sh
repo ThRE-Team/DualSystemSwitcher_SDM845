@@ -1,0 +1,25 @@
+#!/system/bin/sh
+# Dual System - Size Checker
+# linex Project
+
+printf "%-12s | %-20s\n" "Partisi" "Ukuran (Byte)"
+echo "-------------------------------------"
+printf "%-12s | %-20s\n" "vbmeta" "$(blockdev --getsize64 /dev/block/sde8)"
+printf "%-12s | %-20s\n" "vbmeta_2" "$(blockdev --getsize64 /dev/block/sda23)"
+echo ""
+printf "%-12s | %-20s\n" "boot" "$(blockdev --getsize64 /dev/block/sde45)"
+printf "%-12s | %-20s\n" "boot_2" "$(blockdev --getsize64 /dev/block/sda28)"
+echo ""
+printf "%-12s | %-20s\n" "vendor" "$(blockdev --getsize64 /dev/block/sde47)"
+printf "%-12s | %-20s\n" "vendor_2" "$(blockdev --getsize64 /dev/block/sda24)"
+echo ""
+printf "%-12s | %-20s\n" "system" "$(blockdev --getsize64 /dev/block/sde48)"
+printf "%-12s | %-20s\n" "system_2" "$(blockdev --getsize64 /dev/block/sda25)"
+echo ""
+printf "%-12s | %-20s\n" "cust" "$(blockdev --getsize64 /dev/block/sda18)"
+printf "%-12s | %-20s\n" "cust_2" "$(blockdev --getsize64 /dev/block/sda26)"
+echo ""
+printf "%-12s | %-20s\n" "userdata" "$(blockdev --getsize64 /dev/block/sda21)"
+printf "%-12s | %-20s\n" "userdata_2" "$(blockdev --getsize64 /dev/block/sda27)"
+echo ""
+printf "%-12s | %-20s\n" "Extended" "$(blockdev --getsize64 /dev/block/sda22)"
