@@ -90,7 +90,10 @@ else
     "$WORK_DIR/parted" -s /dev/block/sda name 28 boot_2
 fi
 
-ui_print "[+] Done! System_$CURRENT_SYS Active."
+ui_print "[+] Done!"
 ui_print "[!] Maybe Need Reboot"
 ui_print "======================================"
+
+[ -d /data/adb/modules_update/DualSystemSwitcher ] && cp -af /data/adb/modules_update/DualSystemSwitcher/* /data/adb/modules/DualSystemSwitcher && ui_print "[+] Force enable modul without restart" && chmod 755 "/data/adb/modules/DualSystemSwitcher/webroot/check_only.sh"
+
 exit 0

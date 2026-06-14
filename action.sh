@@ -5,6 +5,7 @@
 MODDIR="/data/adb/modules/DualSystemSwitcher"
 WORK_DIR="/cache/DualSystem"
 mkdir -p "$WORK_DIR"
+STATUS_LOG="/data/adb/modules/DualSystemSwitcher/webroot/status.txt"
 
 if [ ! -b "/dev/block/sda28" ]; then
     ui_print "[-] Error: /dev/block/sda28 not found!"
@@ -24,8 +25,12 @@ fi
 "$WORK_DIR/parted" -s /dev/block/sde print | grep -q "48.*system_1"
 if [ $? -eq 0 ]; then
     CURRENT_SYS="2"
+    #echo "SYSTEM_1" > "$STATUS_LOG"
+    #STATUS_SYS="1"
 else
     CURRENT_SYS="1"
+    #echo "SYSTEM_2" > "$STATUS_LOG"
+    #STATUS_SYS="2"
 fi
 
 echo "======================================"
@@ -35,7 +40,7 @@ echo "======================================"
 echo "[*] Current Active: System_$CURRENT_SYS"
 echo "--------------------------------------"
 
-setenforce 0 2>/dev/null
+#setenforce 0 2>/dev/null
 
 if [ "$CURRENT_SYS" = "1" ]; then
     echo "[*] Switch to -> System_2"
@@ -70,7 +75,16 @@ else
     "$WORK_DIR/parted" -s /dev/block/sda name 28 boot_2
 fi
 
-echo "[+] Done! System_$CURRENT_SYS Active."
+"$WORK_DIR/parted" -s /dev/block/sde print | grep -q "48.*system_1"
+if [ $? -eq 0 ]; then
+    echo "SYSTEM_2" > "$STATUS_LOG"
+    STATUS_SYS="2"
+else
+    echo "SYSTEM_1" > "$STATUS_LOG"
+    STATUS_SYS="1"
+fi
+
+echo "[+] Done! System_$STATUS_SYS Active."
 echo "--------------------------------------"
 echo "[!] Maybe Need Reboot"
 echo "======================================"

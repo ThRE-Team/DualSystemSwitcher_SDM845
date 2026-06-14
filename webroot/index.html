@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CURRENT SYSTEM - ThRE Team</title>
+    <style>
+        body { background: #0b0f17; color: #cbd5e1; font-family: monospace; padding: 20px; }
+        .card { background: #111827; border: 1px solid #1f2937; padding: 25px; border-radius: 8px; text-align: center; margin-top: 10px; margin-bottom: 20px; }
+        .status-dot { height: 12px; width: 12px; background-color: #10b981; border-radius: 50%; display: inline-block; margin-right: 10px; vertical-align: middle; }
+        .btn { width: 100%; padding: 15px; border: 1px solid #00bac6; background: #0f172a; color: #00bac6; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: monospace; }
+        .btn:active { opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="color: #00bac6; margin: 0;">DUAL SYSTEM</h2>
+        <span style="font-size: 11px; color: #4b5563;">By ThRE Team</span>
+    </div>
+    <p style="font-size: 11px; color: #9ca3af; margin-top: 2px; margin-bottom: 20px;">MONITORING UI (R12)</p>
+
+    <div class="card">
+        <p style="font-size: 11px; color: #9ca3af; letter-spacing: 1px; margin-bottom: 12px;">CURRENT ACTIVE SYSTEM</p>
+        <h1 style="margin: 10px 0; color: #ffffff; font-size: 28px;" id="slot_status_text">
+            <span class="status-dot" style="background-color: #6b7280;"></span>READING...
+        </h1>
+        <p style="font-size: 11px; color: #4b5563; margin-bottom: 0; margin-top: 15px;">Node partition: /dev/block/sde & sda</p>
+    </div>
+
+    <button class="btn" onclick="triggerCheck()">Check Active System</button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            loadSystemStatus();
+        });
+
+        function loadSystemStatus() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "status.txt", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    const label = document.getElementById("slot_status_text");
+                    if (xhr.status === 200 || xhr.status === 0) {
+                        if (xhr.responseText.trim()) {
+                            label.innerHTML = `<span class="status-dot"></span>` + xhr.responseText.trim();
+                        } else {
+                            label.innerHTML = `<span class="status-dot" style="background-color: #f59e0b;"></span>EMPTY`;
+                        }
+                    } else if (xhr.status === 404) {
+                        label.innerHTML = `<span class="status-dot" style="background-color: #ef4444;"></span>NEED CHECK`;
+                    } else {
+                        label.innerHTML = `<span class="status-dot" style="background-color: #ef4444;"></span>ERR: ` + xhr.status;
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        function triggerCheck() {
+            if (typeof ksu !== 'undefined' && ksu.exec) {
+                const label = document.getElementById("slot_status_text");
+                label.innerHTML = `<span class="status-dot" style="background-color: #3b82f6;"></span>CHECKING...`;
+                
+                ksu.exec("/data/adb/modules/DualSystemSwitcher/webroot/check_only.sh");
+                
+                setTimeout(() => {
+                    loadSystemStatus();
+                }, 800);
+            }
+        }
+    </script>
+</body>
+</html>
