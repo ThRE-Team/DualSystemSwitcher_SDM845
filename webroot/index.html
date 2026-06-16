@@ -4,26 +4,8 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Dual System Switcher - ThRE Team</title>
-	<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
-	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="enjoy.css">
 </head>
-
-<style>
-	@font-face {
-		font-family: 'CustomFont';
-		src: url('Font.ttf') format('truetype');
-	}
-	body {
-		font-family: 'CustomFont', sans-serif !important;
-	}
-	.glow-active {
-		box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
-		border: 1px solid rgba(6, 182, 212, 0.3);
-	}
-	.glow-card {
-		border: 1px solid rgba(255, 255, 255, 0.08);
-	}
-</style>
 
 <body class="bg-neutral-950 select-none text-slate-200 min-h-screen flex flex-col justify-between">
 
@@ -33,10 +15,9 @@
 			<div class="flex flex-col">
 				<h1 class="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">DUAL SYSTEM</h1>
 				<h3 class="text-[10px] tracking-widest text-zinc-400 uppercase font-semibold">Switcher WebUI Dashboard</h3>
-				<button class="text-[10px] text-cyan-400 bg-cyan-950/40 border border-cyan-800/50 px-2 py-0.5 rounded mt-1.5 w-max font-bold active:scale-95 transition-transform" onclick="compareSystemSize()">Version: R12.2</button>
+				<button class="text-[10px] text-cyan-400 bg-cyan-950/40 border border-cyan-800/50 px-2 py-0.5 rounded mt-1.5 w-max font-bold active:scale-95 transition-transform" onclick="compareSystemSize()">Version: R12.3</button>
 			</div>
 			<div class="flex flex-col items-end gap-1.5">
-				<span class="text-[10px] text-zinc-500 font-bold">By ThRE Team</span>
 				<button class="btn btn-xs btn-outline border-zinc-700 text-zinc-300 font-normal px-2.5 h-7 min-h-0 text-[11px]" onclick="checkCurrentSystem()">Refresh</button>
 			</div>
 		</div>
@@ -84,13 +65,14 @@
 
 	</main>
 
-	<dialog id="confirm_switch_modal" class="modal modal-bottom sm:modal-middle">
-		<div class="modal-box border border-zinc-800 bg-zinc-950 p-5 rounded-t-xl sm:rounded-xl">
+	<!-- Pembenahan kelas struktur modal tanpa ketergantungan utility luar -->
+	<dialog id="confirm_switch_modal" class="modal">
+		<div class="modal-box">
 			<h3 class="font-bold text-base text-amber-500 tracking-tight">Confirm System Switch</h3>
 			<p class="py-3 text-xs font-normal text-zinc-400 leading-normal">Are you sure you want to change the active system? Your device may require a reboot after the GPT partition table modification process is completed.</p>
-			<div class="modal-action gap-2 mt-2">
+			<div class="modal-action">
 				<button class="btn btn-sm btn-ghost text-xs text-zinc-400 font-normal" id="modal_cancel">Cancel</button>
-				<button class="btn btn-sm btn-primary bg-cyan-600 border-none text-white hover:bg-cyan-700 text-xs px-4" id="modal_confirm">Continue</button>
+				<button class="btn btn-sm btn-primary text-xs px-4" id="modal_confirm">Continue</button>
 			</div>
 		</div>
 	</dialog>
@@ -109,7 +91,8 @@
 
 		document.addEventListener('DOMContentLoaded', () => {
 			checkCurrentSystem();
-			document.getElementById('modal_cancel').addEventListener('click', () => modal.close());
+			// Menggunakan mutasi atribut kelas 'open' agar kompatibel penuh dengan CSS kustom di WebView lama
+			document.getElementById('modal_cancel').addEventListener('click', () => modal.removeAttribute('open'));
 			document.getElementById('modal_confirm').addEventListener('click', () => executeSystemSwitch());
 		});
 
@@ -182,11 +165,11 @@
 
 		function triggerSwitch(sysNum) {
 			targetSystem = sysNum;
-			modal.showModal();
+			modal.setAttribute('open', 'true');
 		}
 
 		function executeSystemSwitch() {
-			modal.close();
+			modal.removeAttribute('open');
 			terminal.innerHTML += `<br><span class="text-amber-400">[!] Processing switch to SYSTEM_${targetSystem}...</span>`;
 			terminal.scrollTop = terminal.scrollHeight;
 
@@ -206,6 +189,7 @@
 				}, 1000);
 			}
 		}
+
 		function compareSystemSize() {
 			terminal.innerHTML += `<br><span class="text-zinc-500">[#] Comparing system partition sizes...</span>`;
 			terminal.scrollTop = terminal.scrollHeight;
@@ -230,7 +214,6 @@
 					};
 					xhr.send();
 				}, 1000);
-
 			} else {
 				setTimeout(() => {
 					terminal.innerHTML += `<br><span class="text-amber-500">[!] Running outside Next Manager environment (Size comparison skipped).</span>`;
